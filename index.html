@@ -1,12 +1,304 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Cyber Fraud Quiz</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Cyber Fraud Safety Quiz</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light gray background */
+        }
+        .container {
+            max-width: 800px;
+        }
+        /* Custom styling for radio buttons to make them more prominent */
+        input[type="radio"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 1.25rem; /* w-5 */
+            height: 1.25rem; /* h-5 */
+            border: 2px solid #6b7280; /* gray-500 */
+            border-radius: 50%;
+            margin-right: 0.5rem; /* mr-2 */
+            position: relative;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease-in-out;
+        }
+        input[type="radio"]:checked {
+            border-color: #4f46e5; /* indigo-600 */
+            background-color: #4f46e5; /* indigo-600 */
+        }
+        input[type="radio"]:checked::before {
+            content: '';
+            display: block;
+            width: 0.5rem; /* w-2 */
+            height: 0.5rem; /* h-2 */
+            background-color: #ffffff; /* white */
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        input[type="radio"]:focus {
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4); /* indigo-600 with opacity */
+        }
+    </style>
 </head>
-<body>
-  <h1>Welcome to the Cyber Fraud Quiz</h1>
-  <p>Stay safe. Stay alert.</p>
-  <script src="script.js"></script> <!-- if you have JS file -->
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="container bg-white shadow-xl rounded-2xl p-8 md:p-10 lg:p-12 space-y-8 border border-gray-200">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-center text-indigo-700 mb-8 leading-tight">
+            Cyber Fraud Safety Quiz
+        </h1>
+        <p class="text-center text-gray-600 text-lg mb-8">
+            Test your knowledge on how to protect yourself from evolving cyber threats! This quiz is designed to help you navigate the digital world safely, just as Vyaasa helps you write better.
+        </p>
+
+        <div id="quiz-container" class="space-y-10">
+            <!-- Questions will be loaded here by JavaScript -->
+        </div>
+
+        <button id="submit-quiz" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50">
+            Submit Quiz
+        </button>
+
+        <div id="result-container" class="mt-8 pt-6 border-t-2 border-gray-200 hidden">
+            <h2 class="text-3xl font-bold text-center text-indigo-700 mb-4">Your Score: <span id="score"></span></h2>
+            <p id="feedback-message" class="text-center text-gray-700 text-lg mb-6"></p>
+            <div id="detailed-feedback" class="space-y-4"></div>
+            <button id="retake-quiz" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50 mt-6">
+                Retake Quiz
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Define the quiz questions, options, and correct answers directly in the script
+        const quizData = [
+            {
+                question: "Which of the following is a key measure consumers should take to protect their devices from cyber fraud?",
+                options: [
+                    "Only use free, basic antivirus software.",
+                    "Regularly update their operating system but ignore app updates.",
+                    "Utilise specific platforms designed to safeguard individual machines and consider AI-enhanced security software.",
+                    "Share device access with trusted friends for joint monitoring."
+                ],
+                correctAnswer: "Utilise specific platforms designed to safeguard individual machines and consider AI-enhanced security software."
+            },
+            {
+                question: "Why is AI-enhanced security software beneficial for consumers?",
+                options: [
+                    "It solely relies on traditional signature-based detection for known threats.",
+                    "It can continuously scan devices, analyse data patterns, and detect anomalies in real-time.",
+                    "It is designed to generate more false positives to keep users vigilant.",
+                    "It only protects against threats from email attachments."
+                ],
+                correctAnswer: "It can continuously scan devices, analyse data patterns, and detect anomalies in real-time."
+            },
+            {
+                question: "What new phishing tactic involves QR codes redirecting to malicious websites, bypassing email security filters?",
+                options: [
+                    "2-Step Phishing",
+                    "Browser in the Browser",
+                    "Quishing",
+                    "Text Obfuscation"
+                ],
+                correctAnswer: "Quishing"
+            },
+            {
+                question: "How are cybercriminals using Generative AI (GenAI) in phishing attacks?",
+                options: [
+                    "To create simple, generic phishing messages.",
+                    "To generate highly personalised and convincing messages that mimic legitimate communication.",
+                    "To add more grammatical errors to make scams obvious.",
+                    "To limit the scale of phishing campaigns."
+                ],
+                correctAnswer: "To generate highly personalised and convincing messages that mimic legitimate communication."
+            },
+            {
+                question: "Which of these is NOT a reliable indicator of a phishing email now that GenAI is widely used by attackers?",
+                options: [
+                    "Suspicious sender domain.",
+                    "Unusual timing of the email.",
+                    "Poor grammar and spelling.",
+                    "Requests for sensitive information or money."
+                ],
+                correctAnswer: "Poor grammar and spelling."
+            },
+            {
+                question: "What is \"Browser in the Browser\" as a phishing tactic?",
+                options: [
+                    "A legitimate feature that allows you to open multiple browser tabs.",
+                    "Fake browser windows appearing within your actual browser to mimic legitimate sites.",
+                    "A new way to secure your browser from external attacks.",
+                    "A method to browse the internet anonymously."
+                ],
+                correctAnswer: "Fake browser windows appearing within your actual browser to mimic legitimate sites."
+            },
+            {
+                question: "Besides using AI-powered anomaly detection and multi-layered security, what is a crucial advanced anti-phishing strategy for consumers?",
+                options: [
+                    "Always clicking on links to verify their legitimacy.",
+                    "Disabling multi-factor authentication for convenience.",
+                    "Regularly changing passwords and using multi-factor authentication (MFA).",
+                    "Sharing login credentials with close family members."
+                ],
+                correctAnswer: "Regularly changing passwords and using multi-factor authentication (MFA)."
+            },
+            {
+                question: "Why is \"End-User Training\" (self-education) considered your first line of defence against cyber fraud?",
+                options: [
+                    "Because AI systems are infallible and require no human oversight.",
+                    "Because automated solutions are always 100% effective on their own.",
+                    "Because human intuition remains crucial, and you need to identify suspicious messages and understand what to do.",
+                    "Because it allows you to create your own cybersecurity software."
+                ],
+                correctAnswer: "Because human intuition remains crucial, and you need to identify suspicious messages and understand what to do."
+            }
+        ];
+
+        const quizContainer = document.getElementById('quiz-container');
+        const submitButton = document.getElementById('submit-quiz');
+        const resultContainer = document.getElementById('result-container');
+        const scoreSpan = document.getElementById('score');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const detailedFeedback = document.getElementById('detailed-feedback');
+        const retakeQuizButton = document.getElementById('retake-quiz');
+
+        // Function to shuffle an array (Fisher-Yates algorithm)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+            }
+            return array;
+        }
+
+        // Function to build the quiz UI
+        function buildQuiz() {
+            quizContainer.innerHTML = ''; // Clear previous questions
+            // Shuffle the entire quiz data for random question order on each build
+            const shuffledQuizData = shuffleArray([...quizData]);
+
+            shuffledQuizData.forEach((questionData, qIndex) => {
+                const questionElement = document.createElement('div');
+                questionElement.classList.add('question-block', 'bg-gray-50', 'p-6', 'rounded-xl', 'shadow-sm', 'space-y-4', 'border', 'border-gray-100');
+
+                const questionText = document.createElement('p');
+                questionText.classList.add('text-xl', 'font-semibold', 'text-gray-800');
+                questionText.textContent = `${qIndex + 1}. ${questionData.question}`;
+                questionElement.appendChild(questionText);
+
+                const optionsContainer = document.createElement('div');
+                optionsContainer.classList.add('options-container', 'space-y-3');
+
+                // Shuffle options for each question to prevent memorization
+                const shuffledOptions = shuffleArray([...questionData.options]);
+
+                shuffledOptions.forEach((option, oIndex) => {
+                    const optionLabel = document.createElement('label');
+                    optionLabel.classList.add('flex', 'items-center', 'text-gray-700', 'cursor-pointer', 'p-3', 'rounded-md', 'hover:bg-indigo-50', 'transition-colors', 'duration-200');
+
+                    const inputRadio = document.createElement('input');
+                    inputRadio.type = 'radio';
+                    inputRadio.name = `question${qIndex}`;
+                    inputRadio.value = option;
+                    inputRadio.classList.add('form-radio', 'text-indigo-600', 'h-5', 'w-5'); // Tailwind CSS for radio buttons
+
+                    const optionText = document.createElement('span');
+                    optionText.classList.add('ml-3', 'text-lg');
+                    optionText.textContent = option;
+
+                    optionLabel.appendChild(inputRadio);
+                    optionLabel.appendChild(optionText);
+                    optionsContainer.appendChild(optionLabel);
+                });
+
+                questionElement.appendChild(optionsContainer);
+                quizContainer.appendChild(questionElement);
+            });
+            // Show the quiz and hide results if visible
+            quizContainer.classList.remove('hidden');
+            submitButton.classList.remove('hidden');
+            resultContainer.classList.add('hidden');
+            detailedFeedback.innerHTML = ''; // Clear previous feedback
+        }
+
+        // Function to show quiz results
+        function showResults() {
+            let score = 0;
+            const userAnswers = {}; // To store user's selected answers for detailed feedback
+
+            quizData.forEach((questionData, qIndex) => {
+                const selector = `input[name=question${qIndex}]:checked`;
+                const userAnswerInput = document.querySelector(selector);
+
+                const feedbackItem = document.createElement('div');
+                feedbackItem.classList.add('p-4', 'rounded-lg', 'shadow-sm');
+
+                const questionTextDetailed = document.createElement('p');
+                questionTextDetailed.classList.add('font-semibold', 'text-gray-900', 'mb-2');
+                questionTextDetailed.textContent = `${qIndex + 1}. ${questionData.question}`;
+                feedbackItem.appendChild(questionTextDetailed);
+
+                let userAnswerText = 'Not answered';
+                if (userAnswerInput) {
+                    userAnswerText = userAnswerInput.value;
+                    userAnswers[`question${qIndex}`] = userAnswerText;
+
+                    if (userAnswerText === questionData.correctAnswer) {
+                        score++;
+                        feedbackItem.classList.add('bg-green-50', 'border', 'border-green-200');
+                        feedbackItem.innerHTML += `<p class="text-green-700">Your Answer: <span class="font-medium">${userAnswerText}</span> (Correct)</p>`;
+                    } else {
+                        feedbackItem.classList.add('bg-red-50', 'border', 'border-red-200');
+                        feedbackItem.innerHTML += `<p class="text-red-700">Your Answer: <span class="font-medium">${userAnswerText}</span> (Incorrect)</p>`;
+                        feedbackItem.innerHTML += `<p class="text-gray-700">Correct Answer: <span class="font-medium">${questionData.correctAnswer}</span></p>`;
+                    }
+                } else {
+                    // If no answer was selected
+                    feedbackItem.classList.add('bg-yellow-50', 'border', 'border-yellow-200');
+                    feedbackItem.innerHTML += `<p class="text-yellow-700">You didn't answer this question.</p>`;
+                    feedbackItem.innerHTML += `<p class="text-gray-700">Correct Answer: <span class="font-medium">${questionData.correctAnswer}</span></p>`;
+                }
+                detailedFeedback.appendChild(feedbackItem);
+            });
+
+            scoreSpan.textContent = `${score} / ${quizData.length}`;
+
+            if (score === quizData.length) {
+                feedbackMessage.textContent = "Excellent! You got all questions correct!";
+                feedbackMessage.classList.remove('text-red-700', 'text-yellow-700');
+                feedbackMessage.classList.add('text-green-700');
+            } else if (score >= quizData.length / 2) {
+                feedbackMessage.textContent = "Good effort! You answered most questions correctly.";
+                feedbackMessage.classList.remove('text-red-700', 'text-green-700');
+                feedbackMessage.classList.add('text-yellow-700');
+            } else {
+                feedbackMessage.textContent = "Keep learning! Review the answers to improve your cyber safety knowledge.";
+                feedbackMessage.classList.remove('text-green-700', 'text-yellow-700');
+                feedbackMessage.classList.add('text-red-700');
+            }
+
+            // Hide the quiz and show results
+            quizContainer.classList.add('hidden');
+            submitButton.classList.add('hidden');
+            resultContainer.classList.remove('hidden');
+        }
+
+        // Event Listeners
+        submitButton.addEventListener('click', showResults);
+        retakeQuizButton.addEventListener('click', buildQuiz); // Reload the quiz
+
+        // Initial quiz build on page load
+        document.addEventListener('DOMContentLoaded', buildQuiz);
+
+    </script>
 </body>
 </html>
