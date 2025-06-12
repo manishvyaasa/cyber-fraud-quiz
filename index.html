@@ -85,7 +85,7 @@
 
     <script>
         // Define the quiz questions, options, and correct answers directly in the script
-        const quizData = [
+        const originalQuizData = [ // Renamed to clearly indicate original, unshuffled data
             {
                 question: "Which of the following is a key measure consumers should take to protect their devices from cyber fraud?",
                 options: [
@@ -168,6 +168,8 @@
             }
         ];
 
+        let currentQuizData = []; // This will hold the shuffled data for the current quiz session
+
         const quizContainer = document.getElementById('quiz-container');
         const submitButton = document.getElementById('submit-quiz');
         const resultContainer = document.getElementById('result-container');
@@ -188,10 +190,12 @@
         // Function to build the quiz UI
         function buildQuiz() {
             quizContainer.innerHTML = ''; // Clear previous questions
-            // Shuffle the entire quiz data for random question order on each build
-            const shuffledQuizData = shuffleArray([...quizData]);
+            detailedFeedback.innerHTML = ''; // Clear previous feedback
 
-            shuffledQuizData.forEach((questionData, qIndex) => {
+            // Shuffle the original quiz data and assign it to currentQuizData
+            currentQuizData = shuffleArray([...originalQuizData]);
+
+            currentQuizData.forEach((questionData, qIndex) => {
                 const questionElement = document.createElement('div');
                 questionElement.classList.add('question-block', 'bg-gray-50', 'p-6', 'rounded-xl', 'shadow-sm', 'space-y-4', 'border', 'border-gray-100');
 
@@ -232,15 +236,13 @@
             quizContainer.classList.remove('hidden');
             submitButton.classList.remove('hidden');
             resultContainer.classList.add('hidden');
-            detailedFeedback.innerHTML = ''; // Clear previous feedback
         }
 
         // Function to show quiz results
         function showResults() {
             let score = 0;
-            const userAnswers = {}; // To store user's selected answers for detailed feedback
-
-            quizData.forEach((questionData, qIndex) => {
+            // Iterate through the currentQuizData (which is already shuffled)
+            currentQuizData.forEach((questionData, qIndex) => {
                 const selector = `input[name=question${qIndex}]:checked`;
                 const userAnswerInput = document.querySelector(selector);
 
@@ -255,8 +257,8 @@
                 let userAnswerText = 'Not answered';
                 if (userAnswerInput) {
                     userAnswerText = userAnswerInput.value;
-                    userAnswers[`question${qIndex}`] = userAnswerText;
 
+                    // Now compare with questionData.correctAnswer from the currentQuizData array
                     if (userAnswerText === questionData.correctAnswer) {
                         score++;
                         feedbackItem.classList.add('bg-green-50', 'border', 'border-green-200');
@@ -275,13 +277,13 @@
                 detailedFeedback.appendChild(feedbackItem);
             });
 
-            scoreSpan.textContent = `${score} / ${quizData.length}`;
+            scoreSpan.textContent = `${score} / ${currentQuizData.length}`; // Use currentQuizData length
 
-            if (score === quizData.length) {
+            if (score === currentQuizData.length) {
                 feedbackMessage.textContent = "Excellent! You got all questions correct!";
                 feedbackMessage.classList.remove('text-red-700', 'text-yellow-700');
                 feedbackMessage.classList.add('text-green-700');
-            } else if (score >= quizData.length / 2) {
+            } else if (score >= currentQuizData.length / 2) {
                 feedbackMessage.textContent = "Good effort! You answered most questions correctly.";
                 feedbackMessage.classList.remove('text-red-700', 'text-green-700');
                 feedbackMessage.classList.add('text-yellow-700');
